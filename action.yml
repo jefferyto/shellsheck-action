@@ -17,7 +17,7 @@ inputs:
   spec-paths:
     description: >
       Specfile paths, directories, and/or patterns (relative to project
-      root, comma and/or newline separated) to pass to ShellSpec
+      root, newline separated) to pass to ShellSpec
     default: ""
 
   shellspec-shell:
@@ -42,7 +42,7 @@ inputs:
 
   require:
     description: >
-      Modules (comma and/or newline separated) to require
+      Modules (newline separated) to require
     default: ""
 
   options:
@@ -52,8 +52,8 @@ inputs:
 
   load-path:
     description: >
-      Paths (relative to project root, comma and/or newline separated)
-      to add to $SHELLSPEC_LOAD_PATH
+      Paths (relative to project root, newline separated) to add to
+      $SHELLSPEC_LOAD_PATH
     default: ""
 
   helperdir:
@@ -84,8 +84,7 @@ inputs:
 
   env-vars:
     description: >
-      List of environment variables (NAME=VALUE, comma and/or newline
-      separated) to set
+      Environment variables (NAME=VALUE, newline separated) to set
     default: ""
 
   env-from:
@@ -166,7 +165,7 @@ inputs:
 
   kcov-options:
     description: >
-      Additional kcov options (comma and/or newline separated)
+      Additional kcov options (newline separated)
     default: ""
 
   count:
@@ -290,26 +289,17 @@ runs:
           fi
         }
         multi_opt() {
-          while IFS= read -r line; do
-            line="${line#"${line%%[![:space:]]*}"}"
-            line="${line%"${line##*[![:space:]]}"}"
-            if [ -z "$line" ]; then
-              continue
-            fi
-            line="$line,"
-            while [ -n "$line" ]; do
-              val="${line%%,*}"
-              val="${val#"${val%%[![:space:]]*}"}"
-              val="${val%"${val##*[![:space:]]}"}"
-              if [ -n "$val" ]; then
-                if [ -n "$1" ]; then
-                  args+=("$1" "$val")
-                else
-                  args+=("$val")
-                fi
+          local val=
+          while IFS= read -r val; do
+            val="${val#"${val%%[![:space:]]*}"}"
+            val="${val%"${val##*[![:space:]]}"}"
+            if [ -n "$val" ]; then
+              if [ -n "$1" ]; then
+                args+=("$1" "$val")
+              else
+                args+=("$val")
               fi
-              line="${line#*,}"
-            done
+            fi
           done << EOF
         $2
         EOF

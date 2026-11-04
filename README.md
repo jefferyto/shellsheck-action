@@ -22,7 +22,7 @@ Almost all of the available options correspond to ShellSpec's
     project-root: ""
 
     # Specfile paths, directories, and/or patterns (relative to project
-    # root, comma and/or newline separated) to pass to ShellSpec
+    # root, newline separated) to pass to ShellSpec
     spec-paths: ""
 
     # Shell to run ShellSpec with
@@ -38,14 +38,14 @@ Almost all of the available options correspond to ShellSpec's
     # Shell to test with
     shell: ""
 
-    # Modules (comma and/or newline separated) to require
+    # Modules (newline separated) to require
     require: ""
 
     # Additional options file (relative to project root) to use
     options: ""
 
-    # Paths (relative to project root, comma and/or newline separated)
-    # to add to $SHELLSPEC_LOAD_PATH
+    # Paths (relative to project root, newline separated) to add to
+    # $SHELLSPEC_LOAD_PATH
     load-path: ""
 
     # Directory (relative to project root) to load helper files
@@ -64,8 +64,7 @@ Almost all of the available options correspond to ShellSpec's
     # Execution directory of each specfile
     execdir: ""
 
-    # List of environment variables (NAME=VALUE, comma and/or newline
-    # separated) to set
+    # Environment variables (NAME=VALUE, newline separated) to set
     env-vars: ""
 
     # Shell script file (relative to project root) to use to set
@@ -114,7 +113,7 @@ Almost all of the available options correspond to ShellSpec's
     # Set to "true" to enable coverage using kcov, "false" to disable
     kcov: ""
 
-    # Additional kcov options (comma and/or newline separated)
+    # Additional kcov options (newline separated)
     kcov-options: ""
 
     # Set to "true" to count the number of specfiles and examples

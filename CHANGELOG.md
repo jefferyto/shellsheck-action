@@ -2,6 +2,19 @@
 
 ## [v1.1.3-dev][Unreleased] - Unreleased
 
+### Changed
+
+* For options that accept multiple values, values must now be separated
+  by newlines; commas are now considered part of the value
+
+  The affected options are:
+
+  * `spec-paths`
+  * `require`
+  * `load-path`
+  * `env-vars`
+  * `kcov-options`
+
 ## [v1.1.2] - 2026-10-28
 
 ### Changed
