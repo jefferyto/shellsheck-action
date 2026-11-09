@@ -224,7 +224,7 @@ runs:
           +"((%Y-1600)*365+(%Y-1600)/4-(%Y-1600)/100+(%Y-1600)/400+1%j-1000-135140) \
           *86400+(1%H-100)*3600+(1%M-100)*60+(1%S-100)"`))
 
-        dir=".shellspec_action.$epoch.$$"
+        dir=".shellspec-action.$epoch.$$"
         mkdir "$dir" "$dir/repo"
 
         temp="$RUNNER_TEMP"
