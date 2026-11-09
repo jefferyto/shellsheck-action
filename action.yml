@@ -220,6 +220,11 @@ runs:
       continue-on-error: true
 
     - run: |
+        temp="$RUNNER_TEMP"
+        if cygpath --version >/dev/null 2>&1; then
+          temp="$(cygpath "$RUNNER_TEMP")"
+        fi
+
         epoch=$((`TZ=GMT0 date \
           +"((%Y-1600)*365+(%Y-1600)/4-(%Y-1600)/100+(%Y-1600)/400+1%j-1000-135140) \
           *86400+(1%H-100)*3600+(1%M-100)*60+(1%S-100)"`))
@@ -227,19 +232,16 @@ runs:
         dir=".shellspec-action.$epoch.$$"
         mkdir "$dir" "$dir/repo"
 
-        temp="$RUNNER_TEMP"
-        if cygpath --version >/dev/null 2>&1; then
-          temp="$(cygpath "$RUNNER_TEMP")"
-        fi
-
         artifact_id="$PR_PREFIX${GITHUB_SHA:0:7}-$GITHUB_RUN_ATTEMPT"
 
-        echo "workspace-dir=$PWD" >> "$GITHUB_OUTPUT"
-        echo "temp-dir=$temp" >> "$GITHUB_OUTPUT"
-        echo "action-dir=$dir" >> "$GITHUB_OUTPUT"
+        echo "github-workspace=$PWD" >> "$GITHUB_OUTPUT"
+        echo "runner-temp=$temp" >> "$GITHUB_OUTPUT"
+
+        echo "working-dir=$dir" >> "$GITHUB_OUTPUT"
         echo "coverage-dir=$dir/coverage" >> "$GITHUB_OUTPUT"
         echo "repo-dir=$dir/repo" >> "$GITHUB_OUTPUT"
         echo "report-dir=$dir/report" >> "$GITHUB_OUTPUT"
+
         echo "artifact-id=$artifact_id" >> "$GITHUB_OUTPUT"
       shell: bash
       name: Set up
@@ -313,15 +315,15 @@ runs:
         args=( \
           --no-profile \
           --no-boost \
-          --tmpdir "$SETUP_TEMP_DIR" \
+          --tmpdir "$SETUP_RUNNER_TEMP" \
           --no-quick \
           --format documentation \
           --color \
-          --reportdir "$SETUP_WORKSPACE_DIR/$SETUP_REPORT_DIR" \
+          --reportdir "$SETUP_GITHUB_WORKSPACE/$SETUP_REPORT_DIR" \
           --output documentation \
           --output tap \
           --output junit \
-          --covdir "$SETUP_WORKSPACE_DIR/$SETUP_COVERAGE_DIR" \
+          --covdir "$SETUP_GITHUB_WORKSPACE/$SETUP_COVERAGE_DIR" \
         )
 
         val_opt   --shell               "$INPUT_SHELL"
@@ -368,14 +370,14 @@ runs:
         printf '  shell: %s\n' "$INPUT_SHELLSPEC_SHELL"
         printf '  arguments: %s\n' "${args[*]}"
 
-        cd "$SETUP_WORKSPACE_DIR/$INPUT_PROJECT_ROOT"
-        $INPUT_SHELLSPEC_SHELL "$SETUP_WORKSPACE_DIR/$SETUP_REPO_DIR/shellspec" "${args[@]}"
+        cd "$SETUP_GITHUB_WORKSPACE/$INPUT_PROJECT_ROOT"
+        $INPUT_SHELLSPEC_SHELL "$SETUP_GITHUB_WORKSPACE/$SETUP_REPO_DIR/shellspec" "${args[@]}"
 
       shell: bash
       name: Run ShellSpec
       env:
-        SETUP_WORKSPACE_DIR: ${{ steps.setup.outputs.workspace-dir }}
-        SETUP_TEMP_DIR: ${{ steps.setup.outputs.temp-dir }}
+        SETUP_GITHUB_WORKSPACE: ${{ steps.setup.outputs.github-workspace }}
+        SETUP_RUNNER_TEMP: ${{ steps.setup.outputs.runner-temp }}
         SETUP_COVERAGE_DIR: ${{ steps.setup.outputs.coverage-dir }}
         SETUP_REPO_DIR: ${{ steps.setup.outputs.repo-dir }}
         SETUP_REPORT_DIR: ${{ steps.setup.outputs.report-dir }}
@@ -447,9 +449,9 @@ runs:
         if-no-files-found: "ignore"
 
     - run: |
-        rm -rf "$SETUP_ACTION_DIR"
+        rm -rf "$SETUP_WORKING_DIR"
       shell: bash
       if: ${{ !cancelled() }}
       name: Clean up
       env:
-        SETUP_ACTION_DIR: ${{ steps.setup.outputs.action-dir }}
+        SETUP_WORKING_DIR: ${{ steps.setup.outputs.working-dir }}
