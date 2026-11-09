@@ -202,25 +202,24 @@ runs:
   using: composite
   steps:
     - run: |
-        : Install kcov on Linux
         if [ "$(lsb_release -rs)" != "24.04" ]; then
           sudo apt-get update
           sudo apt-get install kcov
         fi
       shell: bash
       if: ${{ runner.os == 'linux' }}
+      name: Install kcov
       continue-on-error: true
 
     - run: |
-        : Install kcov on macOS
         brew update-if-needed
         brew install kcov
       shell: bash
       if: ${{ runner.os == 'macos' }}
+      name: Install kcov
       continue-on-error: true
 
     - run: |
-        : Set up
         epoch=$((`TZ=GMT0 date \
           +"((%Y-1600)*365+(%Y-1600)/4-(%Y-1600)/100+(%Y-1600)/400+1%j-1000-135140) \
           *86400+(1%H-100)*3600+(1%M-100)*60+(1%S-100)"`))
@@ -243,6 +242,7 @@ runs:
         echo "report-dir=$dir/report" >> "$GITHUB_OUTPUT"
         echo "artifact-id=$artifact_id" >> "$GITHUB_OUTPUT"
       shell: bash
+      name: Set up
       id: setup
       env:
         PR_PREFIX: >-
@@ -259,7 +259,6 @@ runs:
         clean: "false"
 
     - run: |
-        : Run ShellSpec
         true_opt() {
           if [ "$2" == "true" ]; then
             args+=("$1")
@@ -372,6 +371,7 @@ runs:
         $INPUT_SHELLSPEC_SHELL "$SETUP_WORKSPACE_DIR/$SETUP_REPO_DIR/shellspec" "${args[@]}"
 
       shell: bash
+      name: Run ShellSpec
       env:
         SETUP_WORKSPACE_DIR: ${{ steps.setup.outputs.workspace-dir }}
         SETUP_TEMP_DIR: ${{ steps.setup.outputs.temp-dir }}
@@ -446,9 +446,9 @@ runs:
         if-no-files-found: "ignore"
 
     - run: |
-        : Clean up
         rm -rf "$SETUP_ACTION_DIR"
       shell: bash
       if: ${{ !cancelled() }}
+      name: Clean up
       env:
         SETUP_ACTION_DIR: ${{ steps.setup.outputs.action-dir }}
