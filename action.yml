@@ -251,7 +251,8 @@ runs:
               format('PR{0}-', github.event.number) || ''
           }}
 
-    - uses: actions/checkout@v7
+    - name: Check out ShellSpec
+      uses: actions/checkout@v7
       with:
         repository: shellspec/shellspec
         ref: ${{ inputs.shellspec-ref }}
