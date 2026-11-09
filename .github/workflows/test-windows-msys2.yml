@@ -35,6 +35,6 @@ jobs:
           MSYS2_LOCATION: ${{ steps.setup-msys2.outputs.msys2-location }}
       - uses: $/
         with:
-          artifact-suffix: "-windows-msys2"
+          artifact-suffix: "_windows-msys2"
           shell: bash
           kcov: true

@@ -27,6 +27,6 @@ jobs:
         shell: bash --noprofile --norc -e -o pipefail -o igncr {0}
       - uses: $/
         with:
-          artifact-suffix: "-windows-cygwin"
+          artifact-suffix: "_windows-cygwin"
           shell: bash
           kcov: true
