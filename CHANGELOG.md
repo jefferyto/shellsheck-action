@@ -2,6 +2,10 @@
 
 ## [v2.0.1-dev][Unreleased] - Unreleased
 
+### Added
+
+* Detect and work with MSYS2 and Cygwin
+
 ## [v2.0.0] - 2026-11-05
 
 ### Changed

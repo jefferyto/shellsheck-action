@@ -220,6 +220,22 @@ runs:
       continue-on-error: true
 
     - run: |
+        $shell = "bash"
+        if (Get-Command "msys2.cmd" -ErrorAction SilentlyContinue) {
+          $shell = "msys2 {0}"
+        } else {
+          bash.exe -c 'set -o igncr' 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            $shell = "bash --noprofile --norc -e -o pipefail -o igncr {0}"
+          }
+        }
+        "shell=$shell" >> $env:GITHUB_OUTPUT
+      shell: pwsh
+      if: ${{ runner.os == 'windows' }}
+      name: Set up for Windows
+      id: setup-windows
+
+    - run: |
         temp="$RUNNER_TEMP"
         if cygpath --version >/dev/null 2>&1; then
           temp="$(cygpath "$RUNNER_TEMP")"
@@ -243,7 +259,7 @@ runs:
         echo "report-dir=$dir/report" >> "$GITHUB_OUTPUT"
 
         echo "artifact-id=$artifact_id" >> "$GITHUB_OUTPUT"
-      shell: bash
+      shell: ${{ steps.setup-windows.outputs.shell || 'bash' }}
       name: Set up
       id: setup
       env:
@@ -373,7 +389,7 @@ runs:
         cd "$SETUP_GITHUB_WORKSPACE/$INPUT_PROJECT_ROOT"
         $INPUT_SHELLSPEC_SHELL "$SETUP_GITHUB_WORKSPACE/$SETUP_REPO_DIR/shellspec" "${args[@]}"
 
-      shell: bash
+      shell: ${{ steps.setup-windows.outputs.shell || 'bash' }}
       name: Run ShellSpec
       env:
         SETUP_GITHUB_WORKSPACE: ${{ steps.setup.outputs.github-workspace }}
@@ -450,7 +466,7 @@ runs:
 
     - run: |
         rm -rf "$SETUP_WORKING_DIR"
-      shell: bash
+      shell: ${{ steps.setup-windows.outputs.shell || 'bash' }}
       if: ${{ !cancelled() }}
       name: Clean up
       env:
