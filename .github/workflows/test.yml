@@ -20,23 +20,23 @@ jobs:
       matrix:
         os:
           - name: Ubuntu
-            suffix: ubuntu
+            id: ubuntu
             runner: ubuntu-latest
 
           - name: macOS
-            suffix: macos
+            id: macos
             runner: macos-latest
 
           - name: Windows Git Bash
-            suffix: windows-gitbash
+            id: windows-gitbash
             runner: windows-latest
 
           - name: Windows MSYS2
-            suffix: windows-msys2
+            id: windows-msys2
             runner: windows-latest
 
           - name: Windows Cygwin
-            suffix: windows-cygwin
+            id: windows-cygwin
             runner: windows-latest
 
       fail-fast: false
@@ -44,17 +44,17 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - if: ${{ matrix.os.suffix == 'windows-msys2' }}
+      - if: ${{ matrix.os.id == 'windows-msys2' }}
         uses: msys2/setup-msys2@v2
         with:
           msystem: UCRT64
           update: true
 
-      - if: ${{ matrix.os.suffix == 'windows-cygwin' }}
+      - if: ${{ matrix.os.id == 'windows-cygwin' }}
         uses: cygwin/cygwin-install-action@v7
 
       - uses: $/
         with:
-          artifact-suffix: ${{ format('_{0}', matrix.os.suffix) }}
+          artifact-suffix: ${{ format('_{0}', matrix.os.id) }}
           shell: bash
           kcov: true
